@@ -73,14 +73,16 @@ def charger_modeles():
     if os.path.exists("model_lr.pkl"):
         modeles["tabulaire"] = joblib.load("model_lr.pkl")
 
-    # Modèle 2 version 1 : CNN sur images
+   # Modèle 2 version 1 : CNN sur images
     if os.path.exists("model_cnn.h5"):
         try:
-            import tensorflow as tf
-            modeles["cnn"] = tf.keras.models.load_model("model_cnn.h5")
-        except Exception as e:
-            st.warning(f"Impossible de charger le CNN : {e}")
-
+            import importlib
+            tf_spec = importlib.util.find_spec("tensorflow")
+            if tf_spec is not None:
+                import tensorflow as tf
+                modeles["cnn"] = tf.keras.models.load_model("model_cnn.h5")
+        except Exception:
+            pass  # CNN non disponible, simulation activée
     # Modèle 2 version 2 : fusion (LogisticRegression sur [pred_cnn, pred_reglog])
     if os.path.exists("model_fusion.pkl"):
         modeles["fusion"] = joblib.load("model_fusion.pkl")
