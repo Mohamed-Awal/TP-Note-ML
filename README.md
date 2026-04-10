@@ -1,100 +1,103 @@
-# 🚀 Guide de Déploiement — Détection Cancer Pulmonaire
+# Détection du Cancer Pulmonaire — TP Noté M2 ESIC
 
-## Prérequis
+Ce projet a été réalisé dans le cadre du TP noté de M2 ESIC en Intelligence Artificielle.
+L'objectif est de détecter le cancer pulmonaire à partir de données cliniques et de radios thoraciques,
+en combinant un modèle de Machine Learning et un réseau de neurones convolutif (CNN).
+
+---
+
+## Ce que fait l'application
+
+L'application Streamlit permet de :
+- Saisir les données cliniques d'un patient (âge, tabagisme, symptômes, etc.)
+- Charger une radio thoracique
+- Obtenir une prédiction du risque de malignité (Modèle 1)
+- Obtenir une décision finale sur la présence probable d'un cancer (Modèle 2 — fusion)
+
+---
+
+## Comment lancer l'application en local
+
+### 1. Installer les dépendances
 
 ```bash
 pip install -r requirements.txt
 ```
 
-## Lancement en local
+### 2. Lancer l'application
 
 ```bash
 streamlit run app.py
 ```
-Accès sur : http://localhost:8501
+
+L'application s'ouvre automatiquement sur : http://localhost:8501
 
 ---
 
-## Étape 1 — Sauvegarder les modèles (dans le notebook)
+## Application déployée en ligne
 
-Ajouter ces cellules à la fin du notebook avant de déployer :
+L'application est accessible publiquement ici :
+
+🔗 https://tp-note-ml-j6cghatkehbfl3aebq4mco.streamlit.app
+
+---
+
+## Fichiers du projet
+
+```
+├── app.py                   → Interface Streamlit
+├── requirements.txt         → Dépendances Python
+├── model_lr.pkl             → Modèle 1 : régression logistique
+├── model_cnn.h5             → Modèle 2 : réseau de neurones CNN
+├── model_fusion.pkl         → Modèle fusion (décision finale)
+├── patients_cancer_poumon.csv → Données tabulaires
+├── TP_Noté.ipynb            → Notebook complet
+├── rapport_tp.docx          → Rapport du projet
+└── README.md                → Ce fichier
+```
+
+---
+
+## Comment générer les modèles
+
+Si les fichiers .pkl et .h5 sont absents, il faut exécuter le notebook `TP_Noté.ipynb` en entier.
+Les cellules de sauvegarde à la fin du notebook génèrent automatiquement les fichiers :
 
 ```python
 import joblib
 
-# Modèle 1 — tabulaire
+# Modèle 1
 joblib.dump(model_lr, "model_lr.pkl")
-joblib.dump(scaler, "scaler.pkl")      # si vous avez normalisé
 
-# Modèle 2 — CNN
-model.save("model_cnn.h5")
+# CNN
+model_cnn.save("model_cnn.h5")
 
-# Modèle fusion (version 2)
-joblib.dump(fusion_model, "model_fusion.pkl")
-```
-
-Placer ces fichiers dans le **même dossier** que `app.py`.
-
----
-
-## Étape 2 — Déploiement sur Streamlit Cloud (recommandé)
-
-1. Créer un dépôt GitHub avec :
-   ```
-   app.py
-   requirements.txt
-   model_lr.pkl
-   scaler.pkl
-   model_cnn.h5
-   model_fusion.pkl
-   ```
-2. Aller sur https://share.streamlit.io
-3. "New app" → sélectionner le dépôt → `app.py` → Deploy
-4. URL publique générée automatiquement (ex: `https://votre-app.streamlit.app`)
-
----
-
-## Étape 2 (alternative) — Déploiement sur Render
-
-1. Créer un `Procfile` :
-   ```
-   web: streamlit run app.py --server.port $PORT --server.address 0.0.0.0
-   ```
-2. Pousser sur GitHub
-3. Créer un "Web Service" sur https://render.com
-4. Connecter le dépôt → Render détecte automatiquement Python
-
----
-
-## Étape 2 (optionnel) — Docker
-
-```dockerfile
-FROM python:3.10-slim
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-EXPOSE 8501
-CMD ["streamlit", "run", "app.py", "--server.address", "0.0.0.0"]
-```
-
-```bash
-docker build -t cancer-detection .
-docker run -p 8501:8501 cancer-detection
+# Modèle fusion
+joblib.dump(model, "model_fusion.pkl")
 ```
 
 ---
 
-## Structure des fichiers
+## Technologies utilisées
 
-```
-projet/
-├── app.py                   ← Interface Streamlit
-├── requirements.txt         ← Dépendances Python
-├── model_lr.pkl             ← Modèle 1 sauvegardé
-├── scaler.pkl               ← Normaliseur (optionnel)
-├── model_cnn.h5             ← CNN sauvegardé
-├── model_fusion.pkl         ← Modèle fusion (optionnel)
-├── README.md                ← Ce fichier
-└── Dockerfile               ← (optionnel)
-```
+- Python 3.11
+- Streamlit — interface utilisateur
+- Scikit-learn — modèles tabulaires (régression logistique, Random Forest, Gradient Boosting)
+- TensorFlow / Keras — réseau de neurones CNN
+- Joblib — sauvegarde des modèles
+- Pandas / NumPy — traitement des données
+- Pillow — traitement des images
+
+---
+
+## Déploiement
+
+L'application a été déployée sur **Streamlit Cloud** en connectant ce dépôt GitHub.
+Le déploiement se met à jour automatiquement à chaque modification du code.
+
+> Note : TensorFlow n'étant pas compatible avec Python 3.14 (Streamlit Cloud),
+> le CNN est simulé en production. Les modèles tabulaire et fusion fonctionnent
+> pleinement en ligne. En local avec Python 3.11, tout fonctionne intégralement.
+
+---
+
